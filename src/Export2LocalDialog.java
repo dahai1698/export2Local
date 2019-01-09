@@ -15,7 +15,9 @@ import java.io.IOException;
 
 public class Export2LocalDialog extends JDialog {
 
-    private JPanel contentPane;
+	public static final String JAVA_SUFFIX = ".java";
+	public static final String CLAZZ_SUFFIX = ".class";
+	private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
 
@@ -24,8 +26,12 @@ public class Export2LocalDialog extends JDialog {
     private JPanel filePanel;
 	private JCheckBox javaCheckBox;
 	private JCheckBox classCheckBox;
-    private AnActionEvent event;
+	private AnActionEvent event;
     private JBList fieldList;
+
+    private static final String TARGET_PATH = "/target/classes";
+	private static final String SRC_PATH = "/src/main/java";
+	private static final String RES_PATH = "/src/main/resources";
 
 	Export2LocalDialog(final AnActionEvent event) {
         this.event = event;
@@ -97,10 +103,9 @@ public class Export2LocalDialog extends JDialog {
         try {
             // 模块对象
             Module module = event.getData(DataKeys.MODULE);
-            String targetPath = "/target/classes";
 			String moduleName = module.getName();
-			String srcPath = moduleName +"/src/main/java";
-			String resPath = moduleName +"/src/main/resources";
+			String srcPath = moduleName +SRC_PATH;
+			String resPath = moduleName +RES_PATH;
             // 导出目录
             String exportPath = textField.getText()+"/"+moduleName;
 			boolean javaCheckBoxSelected = javaCheckBox.isSelected();
@@ -115,14 +120,14 @@ public class Export2LocalDialog extends JDialog {
 					//src
 					exportJavaSource(javaCheckBoxSelected, elementPath, exportPath +"/src/main/java/"+ packPath);
 					//class
-					exportJavaClass(targetPath, classCheckBoxSelected, elementPath, exportPath +targetPath+"/"+ packPath);
+					exportJavaClass(TARGET_PATH, classCheckBoxSelected, elementPath, exportPath +TARGET_PATH+"/"+ packPath);
 				}else{
 					int resPathPos = elementPath.indexOf(resPath);
 					String packPath = StringUtils.substring(elementPath,elementPath.indexOf(moduleName)+moduleName.length()+1);
 					String toResPath = exportPath+"/"+packPath;
 					if(resPathPos!=-1 ){
 						if(classCheckBoxSelected){
-							toResPath = (exportPath + "/" + packPath).replace(resPath.replace(moduleName,""), targetPath);
+							toResPath = (exportPath + "/" + packPath).replace(resPath.replace(moduleName,""), TARGET_PATH);
 							FileUtil.copyFileOrDir(new File(elementPath),new File(toResPath));
 						}
 						if(javaCheckBoxSelected){
@@ -146,10 +151,10 @@ public class Export2LocalDialog extends JDialog {
 
 	private void exportJavaClass(String targetPath,boolean classCheckBoxSelected, String elementPath, String packPath) throws IOException {
 		if(classCheckBoxSelected){
-			String toTargetPath = StringUtils.replace(elementPath, "/src/main/java", targetPath);
-			if(toTargetPath.endsWith(".java")){
-				toTargetPath = toTargetPath.replace(".java",".class");
-				packPath = packPath.replace(".java",".class");
+			String toTargetPath = StringUtils.replace(elementPath, SRC_PATH, targetPath);
+			if(toTargetPath.endsWith(JAVA_SUFFIX)){
+				toTargetPath = toTargetPath.replace(JAVA_SUFFIX, CLAZZ_SUFFIX);
+				packPath = packPath.replace(JAVA_SUFFIX, CLAZZ_SUFFIX);
 			}
 			File targetTo = new File(packPath);
 			File targetFile = new File(toTargetPath);
