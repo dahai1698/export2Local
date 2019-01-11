@@ -6,11 +6,11 @@
 
     <description><![CDATA[
       export2Local<br>
-      <em>选择相应的文件，将java、class(仅适用于maven项目)导出到本地。会生成两个目录(src和target)，其他的文件则原样导出</em>
+      <em>Select the appropriate file to export java, class (maven project only) to the local. Two directories (src and target) will be generated, and other files will be exported as they are.</em>
     ]]></description>
 
     <change-notes><![CDATA[
-      本插件在create patcher(https://github.com/serical/patcher)代码基础上修改<br>
+       Select the appropriate file to export java, class (maven project only) to the local. Two directories (src and target) will be generated, and other files will be exported as they are.
     ]]>
     </change-notes>
 
