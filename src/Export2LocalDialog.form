@@ -148,7 +148,7 @@
         </constraints>
         <properties>
           <foreground color="-15990269"/>
-          <text value="NOTE：Export type is only available for Maven projects, others are not affected"/>
+          <text value="NOTE：Export type is only available for java file in Maven projects, others are not affected"/>
           <toolTipText value=""/>
           <verifyInputWhenFocusTarget value="false"/>
         </properties>

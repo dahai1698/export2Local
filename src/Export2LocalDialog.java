@@ -1,3 +1,4 @@
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
@@ -32,6 +33,8 @@ public class Export2LocalDialog extends JDialog {
     private static final String TARGET_PATH = "/target/classes";
 	private static final String SRC_PATH = "/src/main/java";
 	private static final String RES_PATH = "/src/main/resources";
+	private static final String SAVE_PATH_KEY = "export2Local_path";
+	private static PropertiesComponent propertiesComponent =  PropertiesComponent.getInstance();
 
 	Export2LocalDialog(final AnActionEvent event) {
         this.event = event;
@@ -40,20 +43,10 @@ public class Export2LocalDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+        textField.setText(StringUtils.isNoneBlank(propertiesComponent.getValue(SAVE_PATH_KEY))?propertiesComponent.getValue(SAVE_PATH_KEY):"" );
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonOK.addActionListener(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
-
-        buttonCancel.addActionListener(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -64,26 +57,21 @@ public class Export2LocalDialog extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // 保存路径按钮事件
-        fileChooseBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String userDir = System.getProperty("user.home");
-                JFileChooser fileChooser = new JFileChooser(userDir + "/Desktop");
-                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int flag = fileChooser.showOpenDialog(null);
-                if (flag == JFileChooser.APPROVE_OPTION) {
-                    textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
-                }
-            }
-        });
+        fileChooseBtn.addActionListener(e -> {
+
+			String userDir = System.getProperty("user.home");
+			JFileChooser fileChooser = new JFileChooser(userDir + "/Desktop");
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int flag = fileChooser.showOpenDialog(null);
+			if (flag == JFileChooser.APPROVE_OPTION) {
+				String absolutePath = fileChooser.getSelectedFile().getAbsolutePath();
+				textField.setText(absolutePath);
+				propertiesComponent.setValue(SAVE_PATH_KEY,absolutePath);
+			}
+		});
 
     }
 

@@ -1,16 +1,18 @@
 <idea-plugin>
     <id>org.summer.export2Local</id>
     <name>export2Local</name>
-    <version>1.0</version>
+    <version>1.2</version>
     <vendor email="summer.mkm@aliyun.com" url="https://github.com/dahai1698/export2Local">summer.mkm</vendor>
 
     <description><![CDATA[
       export2Local<br>
-      <em>Select the appropriate file to export java, class (maven project only) to the local. Two directories (src and target) will be generated, and other files will be exported as they are.</em>
+      <em>Export File to Local,Select the appropriate file to export java, class (maven project only) to the local. Two directories (src and target) will be generated, and other files will be exported as they are.</em>
     ]]></description>
 
     <change-notes><![CDATA[
-       Select the appropriate file to export java, class (maven project only) to the local. Two directories (src and target) will be generated, and other files will be exported as they are.
+        <ul>
+            <li>update: "save path" default by last time</li>
+        </ul>
     ]]>
     </change-notes>
 

@@ -11,7 +11,7 @@ public class Export2LoalAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Export2LocalDialog dialog = new Export2LocalDialog(e);
-        dialog.setSize(628, 421);
+        dialog.setSize(720, 421);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         dialog.requestFocus();
