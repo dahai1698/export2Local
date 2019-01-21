@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.summer.export2Local</id>
     <name>export2Local</name>
-    <version>1.2</version>
+    <version>1.3</version>
     <vendor email="summer.mkm@aliyun.com" url="https://github.com/dahai1698/export2Local">summer.mkm</vendor>
 
     <description><![CDATA[
@@ -11,7 +11,8 @@
 
     <change-notes><![CDATA[
         <ul>
-            <li>update: "save path" default by last time</li>
+            <li>add: File can be exported by multiple modules</li>
+            <li>add: add Dialog of "Export Successful"</li>
         </ul>
     ]]>
     </change-notes>

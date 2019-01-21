@@ -2,6 +2,8 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -89,48 +91,56 @@ public class Export2LocalDialog extends JDialog {
         }
 
         try {
-            // 模块对象
-            Module module = event.getData(DataKeys.MODULE);
-			String moduleName = module.getName();
-			String srcPath = moduleName +SRC_PATH;
-			String resPath = moduleName +RES_PATH;
-            // 导出目录
-            String exportPath = textField.getText()+"/"+moduleName;
-			boolean javaCheckBoxSelected = javaCheckBox.isSelected();
-			boolean classCheckBoxSelected = classCheckBox.isSelected();
-			for (int i = 0; i < model.getSize(); i++) {
-                VirtualFile element = model.getElementAt(i);
-                String elementPath = element.getPath();
-				//判断是否为java文件或目录
-				int srcPathPos = elementPath.indexOf(srcPath);
-				if(srcPathPos !=-1){
-					String packPath = StringUtils.substring(elementPath,srcPathPos+srcPath.length()+1);
-					//src
-					exportJavaSource(javaCheckBoxSelected, elementPath, exportPath +"/src/main/java/"+ packPath);
-					//class
-					exportJavaClass(TARGET_PATH, classCheckBoxSelected, elementPath, exportPath +TARGET_PATH+"/"+ packPath);
-				}else{
-					int resPathPos = elementPath.indexOf(resPath);
-					String packPath = StringUtils.substring(elementPath,elementPath.indexOf(moduleName)+moduleName.length()+1);
-					String toResPath = exportPath+"/"+packPath;
-					if(resPathPos!=-1 ){
-						if(classCheckBoxSelected){
-							toResPath = (exportPath + "/" + packPath).replace(resPath.replace(moduleName,""), TARGET_PATH);
-							FileUtil.copyFileOrDir(new File(elementPath),new File(toResPath));
+			ModuleManager moduleManager = ModuleManager.getInstance(event.getProject());
+			Module[] modules = moduleManager.getModules();
+			String moduleName;
+			String srcPath;
+			String resPath;
+			// 模块对象
+			for (Module module : modules) {
+				moduleName = module.getName();
+				srcPath = moduleName + SRC_PATH;
+				resPath = moduleName + RES_PATH;
+				// 导出目录
+				String exportPath = textField.getText() + "/" + moduleName;
+				boolean javaCheckBoxSelected = javaCheckBox.isSelected();
+				boolean classCheckBoxSelected = classCheckBox.isSelected();
+				for (int i = 0; i < model.getSize(); i++) {
+					VirtualFile element = model.getElementAt(i);
+					String elementPath = element.getPath();
+					if(elementPath.indexOf(moduleName)!=-1){
+						//判断是否为java文件或目录
+						int srcPathPos = elementPath.indexOf(srcPath);
+						if (srcPathPos != -1) {
+							String packPath = StringUtils.substring(elementPath, srcPathPos + srcPath.length() + 1);
+							//src
+							exportJavaSource(javaCheckBoxSelected, elementPath, exportPath + "/src/main/java/" + packPath);
+							//class
+							exportJavaClass(TARGET_PATH, classCheckBoxSelected, elementPath, exportPath + TARGET_PATH + "/" + packPath);
+						} else {
+							int resPathPos = elementPath.indexOf(resPath);
+							String packPath = StringUtils.substring(elementPath, elementPath.indexOf(moduleName) + moduleName.length() + 1);
+							String toResPath = exportPath + "/" + packPath;
+							if (resPathPos != -1) {
+								if (classCheckBoxSelected) {
+									toResPath = (exportPath + "/" + packPath).replace(resPath.replace(moduleName, ""), TARGET_PATH);
+									FileUtil.copyFileOrDir(new File(elementPath), new File(toResPath));
+								}
+								if (javaCheckBoxSelected) {
+									toResPath = exportPath + "/" + packPath;
+									FileUtil.copyFileOrDir(new File(elementPath), new File(toResPath));
+								}
+							} else {
+								FileUtil.copyFileOrDir(new File(elementPath), new File(toResPath));
+							}
 						}
-						if(javaCheckBoxSelected){
-							toResPath = exportPath+"/"+packPath;
-							FileUtil.copyFileOrDir(new File(elementPath),new File(toResPath));
-						}
-					}else{
-						FileUtil.copyFileOrDir(new File(elementPath),new File(toResPath));
 					}
 				}
-
-            }
+			}
+			Messages.showInfoMessage("Export Successful!","Info");
         } catch (Exception e) {
-            Messages.showErrorDialog(this, "Export to Local Error!", "Error");
-            e.printStackTrace();
+			e.printStackTrace();
+			Messages.showErrorDialog(this, "Export to Local Error!", "Error");
         }
 
         // add your code here
