@@ -3,7 +3,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -12,14 +11,15 @@ import com.intellij.ui.components.JBList;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
 public class Export2LocalDialog extends JDialog {
 
 	public static final String JAVA_SUFFIX = ".java";
-	public static final String CLAZZ_SUFFIX = ".class";
 	private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -40,7 +40,7 @@ public class Export2LocalDialog extends JDialog {
 
 	Export2LocalDialog(final AnActionEvent event) {
         this.event = event;
-        setTitle("Export to Local");
+        setTitle("Export2Local");
 
         setContentPane(contentPane);
         setModal(true);
@@ -53,6 +53,7 @@ public class Export2LocalDialog extends JDialog {
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+        	@Override
             public void windowClosing(WindowEvent e) {
                 onCancel();
             }
@@ -114,9 +115,13 @@ public class Export2LocalDialog extends JDialog {
 						if (srcPathPos != -1) {
 							String packPath = StringUtils.substring(elementPath, srcPathPos + srcPath.length() + 1);
 							//src
-							exportJavaSource(javaCheckBoxSelected, elementPath, exportPath + "/src/main/java/" + packPath);
+							if(javaCheckBoxSelected){
+								exportJavaSource(elementPath, exportPath + "/src/main/java/" + packPath);
+							}
 							//class
-							exportJavaClass(TARGET_PATH, classCheckBoxSelected, elementPath, exportPath + TARGET_PATH + "/" + packPath);
+							if(classCheckBoxSelected){
+								exportJavaClass(TARGET_PATH, elementPath, exportPath + TARGET_PATH + "/" + packPath);
+							}
 						} else {
 							int resPathPos = elementPath.indexOf(resPath);
 							String packPath = StringUtils.substring(elementPath, elementPath.indexOf(moduleName) + moduleName.length() + 1);
@@ -137,35 +142,48 @@ public class Export2LocalDialog extends JDialog {
 					}
 				}
 			}
-			Messages.showInfoMessage("Export Successful!","Info");
-        } catch (Exception e) {
+			Messages.showInfoMessage(this,"Export Successful!","Info");
+		} catch (Exception e) {
 			e.printStackTrace();
 			Messages.showErrorDialog(this, "Export to Local Error!", "Error");
         }
 
-        // add your code here
         dispose();
     }
 
-	private void exportJavaClass(String targetPath,boolean classCheckBoxSelected, String elementPath, String packPath) throws IOException {
-		if(classCheckBoxSelected){
+	/**
+	 * export  class file
+	 * @param targetPath
+	 * @param elementPath
+	 * @param packPath
+	 * @throws IOException
+	 */
+	private void exportJavaClass(String targetPath,String elementPath, String packPath) throws IOException {
 			String toTargetPath = StringUtils.replace(elementPath, SRC_PATH, targetPath);
 			if(toTargetPath.endsWith(JAVA_SUFFIX)){
-				toTargetPath = toTargetPath.replace(JAVA_SUFFIX, CLAZZ_SUFFIX);
-				packPath = packPath.replace(JAVA_SUFFIX, CLAZZ_SUFFIX);
+				String classPath = StringUtils.substring(toTargetPath,0,toTargetPath.lastIndexOf("/")+1);
+				final String className = StringUtils.substring(toTargetPath,toTargetPath.lastIndexOf("/")+1,toTargetPath.lastIndexOf("."));
+				String[] list = new File(classPath).list((dir, name) -> name.startsWith(className));
+				String localPath;
+				for(String cname:list){
+					localPath = StringUtils.substring(packPath, 0, packPath.lastIndexOf("/")+1) + cname;
+					FileUtil.copyFileOrDir(new File(classPath+cname), new File(localPath));
+				}
+			}else{
+				FileUtil.copyFileOrDir(new File(toTargetPath),new File(packPath));
 			}
-			File targetTo = new File(packPath);
-			File targetFile = new File(toTargetPath);
-			FileUtil.copyFileOrDir(targetFile, targetTo);
-		}
 	}
 
-	private void exportJavaSource(boolean javaCheckBoxSelected, String elementPath, String packPath) throws IOException {
-		if(javaCheckBoxSelected){
+	/**
+	 * export java file
+	 * @param elementPath
+	 * @param packPath
+	 * @throws IOException
+	 */
+	private void exportJavaSource(String elementPath, String packPath) throws IOException {
 			File srcFrom = new File(elementPath);
 			File srcTo = new File(packPath);
 			FileUtil.copyFileOrDir(srcFrom, srcTo);
-		}
 	}
 
 	private void onCancel() {
