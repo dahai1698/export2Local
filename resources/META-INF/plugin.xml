@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.summer.export2Local</id>
     <name>export2Local</name>
-    <version>1.4</version>
+    <version>1.5</version>
     <vendor email="" url="https://github.com/dahai1698/export2Local">summer.mkm</vendor>
 
     <description><![CDATA[
@@ -11,7 +11,7 @@
 
     <change-notes><![CDATA[
         <ul>
-            <li>update: [bug]When there is an inner class in the file, the class file of the relevant inner class cannot be exported.</li>
+            <li>add: Add a progress bar when the export is successful.</li>
         </ul>
     ]]>
     </change-notes>

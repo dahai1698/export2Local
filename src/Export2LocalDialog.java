@@ -29,6 +29,8 @@ public class Export2LocalDialog extends JDialog {
     private JPanel filePanel;
 	private JCheckBox javaCheckBox;
 	private JCheckBox classCheckBox;
+	private JProgressBar progressBar1;
+	private JScrollPane jScrollPane;
 	private AnActionEvent event;
     private JBList fieldList;
 
@@ -92,6 +94,8 @@ public class Export2LocalDialog extends JDialog {
         }
 
         try {
+			progressBar1.setVisible(true);
+			progressBar1.paintImmediately(progressBar1.getBounds());
 			ModuleManager moduleManager = ModuleManager.getInstance(event.getProject());
 			Module[] modules = moduleManager.getModules();
 			String moduleName;
@@ -142,9 +146,13 @@ public class Export2LocalDialog extends JDialog {
 					}
 				}
 			}
+			progressBar1.setVisible(false);
+			progressBar1.paintImmediately(progressBar1.getBounds());
 			Messages.showInfoMessage(this,"Export Successful!","Info");
 		} catch (Exception e) {
 			e.printStackTrace();
+			progressBar1.setVisible(false);
+			progressBar1.paintImmediately(progressBar1.getBounds());
 			Messages.showErrorDialog(this, "Export to Local Error!", "Error");
         }
 
