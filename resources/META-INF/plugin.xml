@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.summer.export2Local</id>
     <name>export2Local</name>
-    <version>1.5</version>
+    <version>1.6</version>
     <vendor email="" url="https://github.com/dahai1698/export2Local">summer.mkm</vendor>
 
     <description><![CDATA[
@@ -11,11 +11,10 @@
 
     <change-notes><![CDATA[
         <ul>
-            <li>add: Add a progress bar when the export is successful.</li>
+            <li>fix: resolve bug.</li>
         </ul>
     ]]>
     </change-notes>
-
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
 
@@ -24,7 +23,7 @@
     <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
     -->
-
+    <depends>com.intellij.modules.java</depends>
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
     </extensions>

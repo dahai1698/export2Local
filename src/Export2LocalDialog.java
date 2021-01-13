@@ -1,6 +1,6 @@
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.ui.Messages;
@@ -200,7 +200,7 @@ public class Export2LocalDialog extends JDialog {
     }
 
     private void createUIComponents() {
-        VirtualFile[] data = event.getData(DataKeys.VIRTUAL_FILE_ARRAY);
+        VirtualFile[] data = event.getData(LangDataKeys.VIRTUAL_FILE_ARRAY);
         fieldList = new JBList(data);
         fieldList.setEmptyText("No File Selected!");
         ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
