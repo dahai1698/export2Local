@@ -92,7 +92,8 @@ public class Export2LocalDialog extends JDialog {
             Messages.showErrorDialog(this, "Please Select Export File!", "Error");
             return;
         }
-
+		boolean javaCheckBoxSelected = javaCheckBox.isSelected();
+		boolean classCheckBoxSelected = classCheckBox.isSelected();
         try {
 			progressBar1.setVisible(true);
 			progressBar1.paintImmediately(progressBar1.getBounds());
@@ -102,14 +103,19 @@ public class Export2LocalDialog extends JDialog {
 			String srcPath;
 			String resPath;
 			// 模块对象
+			int moduleSize = modules.length;
 			for (Module module : modules) {
+				String projectName = module.getProject().getName();
 				moduleName = module.getName();
+				//多模块项目中排除项目名和模块名相同的模块
+				if(moduleSize > 1 && projectName.equals(moduleName)){
+					continue;
+				}
 				srcPath = moduleName + SRC_PATH;
 				resPath = moduleName + RES_PATH;
 				// 导出目录
 				String exportPath = textField.getText() + "/" + moduleName;
-				boolean javaCheckBoxSelected = javaCheckBox.isSelected();
-				boolean classCheckBoxSelected = classCheckBox.isSelected();
+
 				for (int i = 0; i < model.getSize(); i++) {
 					VirtualFile element = model.getElementAt(i);
 					String elementPath = element.getPath();
@@ -153,7 +159,12 @@ public class Export2LocalDialog extends JDialog {
 			e.printStackTrace();
 			progressBar1.setVisible(false);
 			progressBar1.paintImmediately(progressBar1.getBounds());
-			Messages.showErrorDialog(this, "Export to Local Error!", "Error");
+			String errorMsg = "Export to Local Error! ";
+			if(classCheckBoxSelected){
+				errorMsg += "[Probably not compiled]";
+
+			}
+			Messages.showErrorDialog(this, errorMsg, "Error");
         }
 
         dispose();
